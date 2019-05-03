@@ -6,7 +6,9 @@ dependencies:
     - python>=3.5
     - numpy
     - pandas
+    - sympy
     - matplotlib
     - pytest
+    - pip
     - pip:
         - pyyaml

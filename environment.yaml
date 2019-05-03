@@ -1,0 +1,12 @@
+name: ml_regression
+channels:
+  - conda-forge
+dependencies:
+    - tensorflow-gpu==1.9
+    - python>=3.5
+    - numpy
+    - pandas
+    - matplotlib
+    - pytest
+    - pip:
+        - pyyaml

@@ -17,7 +17,7 @@ import numpy as np
 
 class Pointcloud:
     def __init__(self):
-        pass
+        self.rand_y = 0.0
 
     def generate_points(self, m: float, c: float, size: int, sigma: float) -> np.array:
         """
@@ -27,4 +27,5 @@ class Pointcloud:
         y = m * x + c
         mu = 0.0
         rand_y = y + np.random.normal(loc=mu, scale=sigma, size=len(y))
+        self.rand_y = rand_y
         return rand_y

@@ -40,6 +40,7 @@ class MLRegression:
         self.y_rand = self._generate_points(**self.params)
         self.y = [self.params['m'] * x + self.params['c'] for x in range(len(self.y_rand))]
         self.network = self._build_network()
+        self.seed = np.random.seed(42)
 
     def _generate_points(self, m: float, c: float, size: int, sigma: float) -> np.array:
         return self.pc.generate_points(m=m, c=c, size=size, sigma=sigma)

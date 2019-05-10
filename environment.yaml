@@ -1,9 +1,14 @@
 name: ml_regression
 channels:
   - conda-forge
+  - plotly
 dependencies:
     - tensorflow-gpu==1.9
     - python>=3.5
+    - pytorch
+    - plotly
+    - plotly-orca
+    - psutil
     - numpy
     - pandas
     - sympy

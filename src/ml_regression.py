@@ -10,6 +10,7 @@ Created on May 3, 2019
 #############################################################################################
 
 History:
+- v1.1.1: plotly test
 - v1.1.0: working tf regression model
 - v1.0.0: first init
 """
@@ -26,8 +27,11 @@ import numpy as np
 from tensorflow import keras
 import tensorflow as tf
 from matplotlib import pyplot as plt
-import sympy as sp
 
+import plotly.graph_objs as go
+import plotly.io as pio
+import plotly.plotly as py
+import plotly
 
 class Pointcloud:
     def __init__(self):
@@ -124,11 +128,20 @@ if __name__ == "__main__":
         plt.plot(mlr.x, y_predict, 'r')
         plt.show()
     else:
-        mlr_tf = MLRegression_tf()
-        W, b = mlr_tf.main()
-        plt.plot(mlr_tf.x, mlr_tf.y_rand, 'bo', label='noisy data')
-        plt.plot(mlr_tf.x, mlr_tf.y, 'b', label='data')
-        plt.plot(mlr_tf.x, mlr_tf.y_pred, 'r', label='fitted line')
-        plt.grid()
-        plt.legend()
-        plt.show()
+        mlr = MLRegression_tf()
+        W, b = mlr.main()
+        # plt.plot(mlr.x, mlr.y_rand, 'bo', label='noisy data')
+        # plt.plot(mlr.x, mlr.y, 'b', label='data')
+        # plt.plot(mlr.x, mlr.y_pred, 'r', label='fitted line')
+        # plt.grid()
+        # plt.legend()
+        # plt.show()
+        trace1 = go.Scatter(x=mlr.x, y=mlr.y_rand, name='noisy data', mode='markers')
+        trace2 = go.Scatter(x=mlr.x, y=mlr.y_pred, name='fitted line', mode='lines')
+        data = [trace1, trace2]
+        layout = dict(title='ML linear regression test',
+                        xaxis= dict(title='x-axis'),
+                        yaxis= dict(title='y-axis'))
+        fig = dict(data=data, layout=layout)
+        # plotly.offline.plot(fig, filename='test.html')
+        pio.write_image(fig, 'test.pdf', width=1200, height=900, scale=4)

@@ -5,11 +5,12 @@ Created on May 3, 2019
 @author: maa
 @attention: ml test for linear regression
 @contact: albus.marcel@gmail.com (Marcel Albus)
-@version: 1.0.0
+@version: 1.1.0
 
 #############################################################################################
 
 History:
+- v1.1.0: working tf regression model
 - v1.0.0: first init
 """
 
@@ -33,7 +34,7 @@ class Pointcloud:
         self.seed = np.random.seed(42)
         self.params = {'m': 2.0,
                        'c': 2.0,
-                       'size': 1000,
+                       'size': 300,
                        'sigma': 12.0}
         self.x = np.arange(0, self.params['size'])
         self.y = self.params['m'] * self.x + self.params['c']
@@ -86,30 +87,32 @@ class MLRegression_tf:
         self.W = tf.Variable(np.random.rand(), name="W")
         self.b = tf.Variable(np.random.rand(), name="b")
         
-        self.init = tf.global_variables_initializer()
-
     def _forward(self):
         return tf.add(tf.multiply(self.X, self.W), self.b)
 
     def _loss(self):
-        # return tf.reduce_sum(tf.pow(self._forward() - self.Y, 2)) / self.n
-        return tf.reduce_sum((self._forward() - self.Y) ** 2) / self.n
+        y_pred = self._forward()
+        return tf.reduce_sum(tf.pow(y_pred - self.Y, 2)) / self.n
 
     def _create_optimizer(self):
-        return tf.train.GradientDescentOptimizer(learning_rate=self.lr).minimize(self._loss())
+        return tf.train.RMSPropOptimizer(learning_rate=self.lr, decay=0.95).minimize(self._loss())
 
     def main(self):
         with tf.Session() as sess:
-            sess.run(self.init)
             optimizer = self._create_optimizer()
+            init = tf.global_variables_initializer()
+            sess.run(init)
 
-            for epoch in range(50):
+            for epoch in range(20):
                 for _x, _y in zip(self.x, self.y_rand):
                     sess.run(optimizer, feed_dict={self.X: _x, self.Y: _y})
 
-                if (epoch + 1) % 5 == 0:
-                    c = sess.run(self._loss(), feed_dict={self.X: self.x, self.Y: self.y})
-                    print("Epoch: {}, cost: {}, W: {}, b: {}".format(epoch, c, sess.run(self.W), sess.run(self.b)))
+                c = sess.run(self._loss(), feed_dict={self.X: self.x, self.Y: self.y})
+                W, b = sess.run(self.W), sess.run(self.b)
+                print("Epoch: {}, cost: {:.5f}, W: {:.3f}, b: {:.3f}".format(epoch, c, W, b))
+            y_pred = sess.run(self._forward(), feed_dict={self.X: self.x})
+            self.y_pred = y_pred
+            return W, b
 
 
 if __name__ == "__main__":
@@ -122,4 +125,10 @@ if __name__ == "__main__":
         plt.show()
     else:
         mlr_tf = MLRegression_tf()
-        mlr_tf.main()
+        W, b = mlr_tf.main()
+        plt.plot(mlr_tf.x, mlr_tf.y_rand, 'bo', label='noisy data')
+        plt.plot(mlr_tf.x, mlr_tf.y, 'b', label='data')
+        plt.plot(mlr_tf.x, mlr_tf.y_pred, 'r', label='fitted line')
+        plt.grid()
+        plt.legend()
+        plt.show()
